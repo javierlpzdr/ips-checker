@@ -1,0 +1,239 @@
+#========================
+# Interface configuration
+#========================
+pushd interface 
+
+
+popd
+# End of interface configuration
+
+
+
+# ----------------------------------
+# IPHTTPS Configuration
+# ----------------------------------
+pushd interface httpstunnel
+
+reset
+
+
+popd
+# End of IPHTTPS configuration
+
+
+
+# ----------------------------------
+# IPv4 Configuration
+# ----------------------------------
+pushd interface ipv4
+
+reset
+set global
+set interface interface="Ethernet (Kernel Debugger)" forwarding=enabled advertise=enabled nud=enabled ignoredefaultroutes=disabled
+set interface interface="Ethernet" forwarding=enabled advertise=enabled nud=enabled ignoredefaultroutes=disabled
+
+
+popd
+# End of IPv4 configuration
+
+
+
+# ----------------------------------
+# IPv6 Configuration
+# ----------------------------------
+pushd interface ipv6
+
+reset
+set interface interface="Ethernet (Kernel Debugger)" forwarding=enabled advertise=enabled nud=enabled ignoredefaultroutes=disabled
+set interface interface="Ethernet" forwarding=enabled advertise=enabled nud=enabled ignoredefaultroutes=disabled
+
+
+popd
+# End of IPv6 configuration
+
+
+
+# ----------------------------------
+# ISATAP Configuration
+# ----------------------------------
+pushd interface isatap
+
+
+
+popd
+# End of ISATAP configuration
+
+
+
+# ----------------------------------
+# 6to4 Configuration
+# ----------------------------------
+pushd interface 6to4
+
+reset
+
+
+
+popd
+# End of 6to4 configuration
+
+
+
+# ----------------------------------
+# ISATAP Configuration
+# ----------------------------------
+pushd interface isatap
+
+
+
+popd
+# End of ISATAP configuration
+
+
+#========================
+# Port Proxy configuration
+#========================
+pushd interface portproxy
+
+reset
+
+
+popd
+
+# End of Port Proxy configuration
+
+
+
+# ----------------------------------
+# TCP Configuration
+# ----------------------------------
+pushd interface tcp
+
+reset
+
+set global rss=enabled autotuninglevel=normal congestionprovider=default ecncapability=disabled timestamps=disabled initialrto=3000 rsc=enabled nonsackrttresiliency=disabled maxsynretransmissions=2 fastopen=enabled fastopenfallback=enabled hystart=enabled pacingprofile=off
+
+
+popd
+# End of TCP configuration
+
+
+
+# ----------------------------------
+# Teredo Configuration
+# ----------------------------------
+pushd interface teredo
+set state type=disabled servername=win1807.ipv6.microsoft.com. servervirtualip=0.0.0.0
+
+
+
+popd
+# End of Teredo configuration
+
+
+
+# ----------------------------------
+# 6to4 Configuration
+# ----------------------------------
+pushd interface 6to4
+
+reset
+
+
+
+popd
+# End of 6to4 configuration
+
+
+# ------------------------------------
+# Bridge configuration (not supported)
+# ------------------------------------
+
+# ------------------------------------
+# End of Bridge configuration
+# ------------------------------------
+
+The 'netsh advfirewall dump' command is not implemented in this version
+of Windows. Instead, use the 'netsh advfirewall export' command to write
+the current Windows Defender Firewall with Advanced Security configuration from
+the current policy store to a file on disk. You can then use 'netsh
+advfirewall import' to read the file and load it into another policy
+store, such as a Group Policy object or the current policy store on
+another computer. To set the current policy store, use the 'netsh
+advfirewall set store' command.
+For more information about the commands in the netsh advfirewall context,
+see Netsh Commands for Windows Defender Firewall with Advanced Security at
+https://go.microsoft.com/fwlink/?linkid=111237.
+# ----------------------------------------
+# Wired LAN Configuration
+# ----------------------------------------
+pushd lan
+
+
+popd
+
+# End of Wired LAN Configuration.
+
+
+                                            
+# ----------------------------------------- 
+# Remote Access Configuration               
+# ----------------------------------------- 
+pushd ras
+
+
+
+
+popd
+
+# End of Remote Access configuration.        
+                                             
+                                             
+
+                                            
+# ----------------------------------------- 
+# Remote Access Diagnostics Configuration   
+# ----------------------------------------- 
+pushd ras diagnostics
+
+set rastracing component = * state = disabled
+
+set modemtracing state = disabled
+
+set cmtracing state = disabled
+
+set securityeventlog state = disabled
+
+
+
+popd
+
+# End of Remote Access Diagnostics Configuration.
+                                                 
+                                                 
+
+                                            
+# ----------------------------------------- 
+# Remote Access AAAA Configuration          
+# ----------------------------------------- 
+pushd ras aaaa
+
+
+popd
+
+# End of Remote Access AAAA configuration.     
+                                               
+                                               
+
+
+# -----------------------------------------
+# WinHTTP Proxy Configuration
+# -----------------------------------------
+pushd winhttp
+
+reset proxy
+
+popd
+
+# End of WinHTTP Proxy Configuration
+
