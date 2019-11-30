@@ -1,4 +1,5 @@
-#include <stdio.h>;
+#include <stdio.h>
+#include <string.h>
 
 int checkIps() {
     FILE* fp;
@@ -65,33 +66,85 @@ int checkIps() {
     return(0);
 }
 
-main()
+int show_network_adapter() {
+    
+    char adapter[50], command[200], path;
+    
+    char parts[3][50] = {
+        "ip",
+        "mask",
+        "port"
+    };
+    
+    int i;
+    
+    scanf("%s", &adapter);
+    
+    for (i = 0; i < parts; i++) {
+        strcpy(command, "ipconfig ");
+        strcat(command, adapter);
+        strcat(command, " | find " );
+        strcat(command, parts[i]);
+        strcat(command, " >> ");
+        strcat(command, path);
+    }
+    
+    system("ipconfig | find \"IP Address\" >> test ");
+    
+    return(0);
+}
+
+int compare_ips() {
+    char ip_1[15] = "", ip_2[15] = "";
+    char command[50] = "ping ";
+    
+    scanf("%s", ip_1);
+    scanf("%s", ip_2);
+    
+    strcat(command, ip_1);
+    system(command);
+    
+    strcpy(command, "ping ");
+    strcat(command, ip_2);
+    
+    return(0);
+}
+
+int main()
 {
     int choice;
 
     // Create a menu
     do {
         printf("Menu\n\n");
-        printf("1. Option A\n");
-        printf("2. Option B\n");
-        printf("3. Exit\n\n");
+        printf("1. Check ips\n");
+        printf("2. Show newtwork adapter\n");
+        printf("3. Compare ips\n");
+        printf("4. Exit\n\n");
         printf("Select your choice:\n");
         scanf("%d", &choice);
         
         switch (choice) {
             case 1:
+                printf("Checking ips...\n\n");
                 checkIps();
                 break;
             case 2:
-                printf("case 2 selected\n\n");
+                printf("Showing network adapter...\n\n");
+                show_newtwork_adapter();
                 break;
             case 3:
+                printf("Comparing two ips...\n\n");
+                compare_ips();
+                break;
+            case 4:
                 printf("goodbye\n");
                 break;
             default:
                 printf("wrong choice.Enter Again\n");
                 break;
         }
-    } while (choice != 3);
+    } while (choice != 4);
     
+    return(0);
 }
