@@ -10,6 +10,7 @@ main()
 
 	fp = fopen("/Users/javierlopez_uoc/Projects/Producto2/Producto2/ips.txt", "rb");
 
+    // Get ips from a txt
 	while ((c = getc(fp)) != EOF) {
 		if (c == '\r') continue;
 
@@ -29,6 +30,7 @@ main()
     strcpy(ips[ips_lenght], "");
     strcpy(temp_ip, "");
     
+    // Print ips in the terminal
 	for (i = 0; i <= ips_lenght; i++) {
 
 		printf("%s", ips[i]);
@@ -37,6 +39,7 @@ main()
 		printf("\n");
 	}
 
+    // Exec pings to ips and write result in test.txt
 	printf("Testing IPs...");
 
 	char command[50];
