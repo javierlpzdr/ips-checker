@@ -39,13 +39,16 @@ main()
 
 	printf("Testing IPs...");
 
-	char *ip_prefix, *ip[25];
-	ip_prefix = "ping ";
 	char command[50];
-
-	int z;
-
-	z = strlen(ip);
+    
+    system("rm /Users/javierlopez_uoc/Projects/Producto2/Producto2/test.txt");
+    
+    for (i = 0; i < ips_lenght; i++) {
+        strcpy(command, "ping -c2 ");
+        strcat(command, ips[i]);
+        strcat(command, " >> /Users/javierlopez_uoc/Projects/Producto2/Producto2/test.txt");
+        system(command);
+    }
 
 	return(0);
 }

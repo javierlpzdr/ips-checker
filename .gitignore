@@ -2,3 +2,4 @@
 *.dSYM
 *.out
 .DS_Store
+test.txt
