@@ -3,27 +3,32 @@
 main()
 {
 	FILE* fp;
-	char c, ips[5];
+	char c, ips[5][15], temp_ip[15] = "";
 	int i, x, ips_lenght;
 
 	ips_lenght = 0;
-	ips[0] = "";
 
-	fp = fopen("./ips.txt", "rb");
+	fp = fopen("/Users/javierlopez_uoc/Projects/Producto2/Producto2/ips.txt", "rb");
 
 	while ((c = getc(fp)) != EOF) {
-		if (c == '\n') continue;
+		if (c == '\r') continue;
 
-		if (c == '\r') {
+		if (c == '\n') {
+            strcpy(ips[ips_lenght], temp_ip);
 			ips_lenght++;
-			ips[ips_lenght] = "";
+            strcpy(ips[ips_lenght], "");
+            strcpy(temp_ip, "");
 			continue;
 		}
 
-		ips[ips_lenght] = malloc(strlen(ips[ips_lenght]) + 1);
-		ips[ips_lenght] += c;
+        strncat(temp_ip, &c, 1);
 	}
 
+    strcpy(ips[ips_lenght], temp_ip);
+    ips_lenght++;
+    strcpy(ips[ips_lenght], "");
+    strcpy(temp_ip, "");
+    
 	for (i = 0; i <= ips_lenght; i++) {
 
 		printf("%s", ips[i]);
