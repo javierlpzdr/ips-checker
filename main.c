@@ -1,5 +1,35 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdbool.h>
+
+//Función que permite leer cadenas con espacios en blanco en su interior
+
+int leecad(char *cad, int n) {
+    int i, c;
+    c = getchar();
+    
+    if (c == EOF) {
+        cad[0] = '\0';
+        return 0;
+    }
+    
+    if (c == '\n')
+        i = 0;
+    else {
+        cad[0] = c;
+        i = 1;
+    }
+    
+    for (; i < n - 1 && (c = getchar()) != EOF && c != '\n'; i++)
+        cad[i] = c;
+        cad[i] = '\0';
+    
+    if (c != '\n' && c != EOF)
+        while ((c = getchar()) != '\n' && c != EOF);
+    
+    return 1;
+};
+
 
 int checkIps() {
     FILE* fp;
@@ -17,6 +47,7 @@ int checkIps() {
     fp = fopen(ips_file, "rb");
     
     // Get ips from a txt
+    // TODO: Use fgets to get the lines directly
     while ((c = getc(fp)) != EOF) {
         if (c == '\r') continue;
 
@@ -45,7 +76,7 @@ int checkIps() {
         printf("\n");
     }
 
-    // Exec pings to ips and write result in test.txt
+    // Exec pings to ips and write the results in test.txt
     printf("Testing IPs...");
 
     char command[200];
@@ -53,7 +84,7 @@ int checkIps() {
     strcpy(command, "rm ");
     strcat(command, test_file);
     system(command);
-    
+
     for (i = 0; i < ips_lenght; i++) {
         strcpy(command, "");
         strcpy(command, "ping -c2 ");
@@ -62,10 +93,42 @@ int checkIps() {
         strcat(command, test_file);
         system(command);
     }
+    
+    // Read the file that contains the results and the correct are saved
+    fp = fopen(test_file, "rb");
+    
+    char content[5000], results[4][15], ip[15];
+    bool is_ping;
+    
+    content[5000];
+    
+    i = 0;
+    
+    while((c = getc(fp)) != EOF) {
+        content[i] = c;
+        
+        is_ping = strstr("PING ", content) == "PING ";
+        
+        if (is_ping) {
+            
+            if (c == ' ') {
+                is_ping = false
+            } else {
+                strcat(ip, c);
+            }
+        }
+        
+        if ((strstr(content, "packets received") == "packets received") && (strstr(content, "0 packets received")) != "0 packets received") {
+            strcpy(results[i], ip);
+        }
+        
+        i++;
+    }
 
     return(0);
 }
 
+// Get the network adapter and the result is saved in a file
 int show_network_adapter() {
     
     char adapter[50], command[200], path;
@@ -87,25 +150,65 @@ int show_network_adapter() {
         strcat(command, parts[i]);
         strcat(command, " >> ");
         strcat(command, path);
+        
+        system(command);
     }
-    
-    system("ipconfig | find \"IP Address\" >> test ");
     
     return(0);
 }
 
+// Compare two pings and show the fastest from both
 int compare_ips() {
     char ip_1[15] = "", ip_2[15] = "";
-    char command[50] = "ping ";
+    char command[50] = "ping -c1";
+    char result_ping_1, speed_1, result_ping_2, speed_2;
+    char c;
+    
+    char content_1, content_2;
     
     scanf("%s", ip_1);
     scanf("%s", ip_2);
     
     strcat(command, ip_1);
-    system(command);
     
-    strcpy(command, "ping ");
+    FILE *f = popen(command, "r");
+    
+    if (f == NULL)
+        return 1;
+    
+    while ((c = getc(f)) != NULL) {
+        if (strstr(content_1, "time=") == "time=") {
+            strcat(speed_1, c);
+        } else {
+            strcat(content_1, c);
+        }
+    }
+    
+    pclose(f);
+    
+    strcpy(command, "ping -c1");
     strcat(command, ip_2);
+    
+    FILE *f2 = popen(command, "r");
+    
+    if (f == NULL)
+        return 1;
+    
+    while ((c = getc(f2)) != NULL) {
+        if (strstr(content_2, "time=") == "time=") {
+            strcat(speed_2, c);
+        } else {
+            strcat(content_2, c);
+        }
+    }
+    
+    pclose(f);
+    
+    if (speed_1 > speed_2) {
+        printf("%s", ip_1);
+    } else {
+        printf("%s", ip_2);
+    }
     
     return(0);
 }
