@@ -31,22 +31,12 @@ int leecad(char *cad, int n) {
 };
 
 
-int checkIps() {
-    FILE* fp;
-    char c, ips[5][15], temp_ip[15] = "", ips_file[200], test_file[200];
-    int i, ips_lenght;
-
+void get_ips_from_file(FILE* fp, char ips[4][15]) {
+    char c, temp_ip[15] = "";
+    int ips_lenght;
+    
     ips_lenght = 0;
     
-    printf("Insert the path to the file that contains ips:\n");
-    scanf("%s", &ips_file);
-    
-    printf("Insert the path to the file where save the results:\n");
-    scanf("%s", &test_file);
-    
-    fp = fopen(ips_file, "rb");
-    
-    // Get ips from a txt
     // TODO: Use fgets to get the lines directly
     while ((c = getc(fp)) != EOF) {
         if (c == '\r') continue;
@@ -61,48 +51,57 @@ int checkIps() {
 
         strncat(temp_ip, &c, 1);
     }
-
+    
     strcpy(ips[ips_lenght], temp_ip);
     ips_lenght++;
     strcpy(ips[ips_lenght], "");
     strcpy(temp_ip, "");
+}
+
+void print_ips(char ips[4][15]) {
+    int i;
+    i = 0;
     
     // Print ips in the terminal
-    for (i = 0; i <= ips_lenght; i++) {
+    for (i = 0; i <= sizeof(ips); i++) {
 
         printf("%s", ips[i]);
 
         printf("\r");
         printf("\n");
     }
+}
 
-    // Exec pings to ips and write the results in test.txt
-    printf("Testing IPs...");
-
+void exec_ip_pings(char file[200], char ips[4][15]) {
     char command[200];
+    int i;
     
     strcpy(command, "rm ");
-    strcat(command, test_file);
+    strcat(command, file);
     system(command);
 
-    for (i = 0; i < ips_lenght; i++) {
+    for (i = 0; i < sizeof(ips); i++) {
         strcpy(command, "");
         strcpy(command, "ping -c2 ");
         strcat(command, ips[i]);
         strcat(command, " >> ");
-        strcat(command, test_file);
+        strcat(command, file);
         system(command);
     }
-    
+}
+
+void get_correct_ips(char test_file[200]) {
     // Read the file that contains the results and the correct are saved
-    fp = fopen(test_file, "rb");
-    
-    char content[5000], results[4][15], ip[15];
+    char content[5000], results[4][15], ip[15], c;
     bool is_ping;
-    
-    content[5000];
+    int i;
+    FILE* fp;
     
     i = 0;
+    
+    fp = fopen(test_file, "rb");
+    
+    content[5000];
     
     while((c = getc(fp)) != EOF) {
         content[i] = c;
@@ -112,7 +111,7 @@ int checkIps() {
         if (is_ping) {
             
             if (c == ' ') {
-                is_ping = false
+                is_ping = false;
             } else {
                 strcat(ip, c);
             }
@@ -124,6 +123,29 @@ int checkIps() {
         
         i++;
     }
+}
+
+int checkIps() {
+    FILE* fp;
+    char c, ips[5][15], ips_file[200], test_file[200];
+    int i;
+    
+    printf("Insert the path to the file that contains ips:\n");
+    scanf("%s", &ips_file);
+    
+    printf("Insert the path to the file where save the results:\n");
+    scanf("%s", &test_file);
+    
+    fp = fopen(ips_file, "rb");
+    
+    get_ips_from_file(fp, ips);
+    print_ips(ips);
+
+    // Exec pings to ips and write the results in test.txt
+    printf("Testing IPs...");
+    
+    exec_ip_pings(test_file, ips);
+    get_correct_ips(test_file)
 
     return(0);
 }
@@ -157,10 +179,39 @@ int show_network_adapter() {
     return(0);
 }
 
+bool is_bigger(a, b) {
+    return a > b;
+}
+
+int get_ping_time(ip) {
+    char content, c, command[50] = "ping -c1";
+    int time;
+    
+    c = "";
+    
+    strcat(command, ip);
+    
+    FILE *f = popen(command, "r");
+    
+    if (f == NULL)
+        return 1;
+    
+    while ((c = getc(f)) != NULL) {
+        if (strstr(content, "time=") == "time=") {
+            strcat(time, c);
+        } else {
+            strcat(content, c);
+        }
+    }
+    
+    pclose(f);
+    
+    return time;
+}
+
 // Compare two pings and show the fastest from both
 int compare_ips() {
     char ip_1[15] = "", ip_2[15] = "";
-    char command[50] = "ping -c1";
     char result_ping_1, speed_1, result_ping_2, speed_2;
     char c;
     
@@ -169,42 +220,10 @@ int compare_ips() {
     scanf("%s", ip_1);
     scanf("%s", ip_2);
     
-    strcat(command, ip_1);
+    speed_1 = get_ping_time(ip_1);
+    speed_2 = get_ping_time(ip_2);
     
-    FILE *f = popen(command, "r");
-    
-    if (f == NULL)
-        return 1;
-    
-    while ((c = getc(f)) != NULL) {
-        if (strstr(content_1, "time=") == "time=") {
-            strcat(speed_1, c);
-        } else {
-            strcat(content_1, c);
-        }
-    }
-    
-    pclose(f);
-    
-    strcpy(command, "ping -c1");
-    strcat(command, ip_2);
-    
-    FILE *f2 = popen(command, "r");
-    
-    if (f == NULL)
-        return 1;
-    
-    while ((c = getc(f2)) != NULL) {
-        if (strstr(content_2, "time=") == "time=") {
-            strcat(speed_2, c);
-        } else {
-            strcat(content_2, c);
-        }
-    }
-    
-    pclose(f);
-    
-    if (speed_1 > speed_2) {
+    if (is_bigger(strtonum(speed_1), strnum(speed_2))) {
         printf("%s", ip_1);
     } else {
         printf("%s", ip_2);
