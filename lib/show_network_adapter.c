@@ -8,6 +8,7 @@
 
 #include "show_network_adapter.h"
 
+// Save the adapter config from a specific one
 void save_adapter(char * path, char * adapter)
 {
     char command[200];
@@ -15,14 +16,15 @@ void save_adapter(char * path, char * adapter)
     
     i = 0;
     
-    strcpy(command, "ifconfig ");
+    strcpy(command, "netsh interface ip show config name=\"");
     strcat(command, adapter);
-    strcat(command, " >> ");
+    strcat(command, "\" > ");
     strcat(command, path);
     
     system(command);
 }
 
+// Get the adapter config from a specific one
 char * get_adapter(char * path) {
     FILE * f = fopen (path, "rb");
     char * buffer;
@@ -55,20 +57,9 @@ int show_network_adapter() {
     
     save_adapter(path, adapter);
     
-    const char parts[3][50] = {
-        "ip=",
-        "mask=",
-        "port="
-    };
-    
     adapter_info = get_adapter(path);
     
-    for ( i=0; i <= 3; i++ ) {
-        match = extract_between(adapter_info, parts[i], " ");
-        if (match) {
-            printf("%s", match);
-        }
-    }
+	printf("%s", adapter_info);
     
     return(0);
 }

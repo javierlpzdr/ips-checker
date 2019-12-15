@@ -9,29 +9,26 @@
 #include "compare_ips.h"
 
 float get_ping_time(char ip[20]) {
-    char command[50] = "ping -c1 ", * ret, ping_result[200];
+    char command[50] = "ping ", * ret, ping_result[200];
     ret = "0";
     
     strcat(command, ip);
     
-    FILE *f = popen(command, "r");
+    FILE *f = _popen(command, "r");
     
     if (f == NULL)
         return 1;
     
     while (fgets(ping_result, sizeof(ping_result), f)) {
-        if (search(ping_result, "time=") || search(ping_result, "time= ")) {
-            ret = extract_between(ping_result, "time=", " ms");
+        if (search(ping_result, "Average = ")) {
+            ret = extract_between(ping_result, "Average = ", "ms");
         }
     }
     	
-    pclose(f);
+    _pclose(f);
     
-    float time = 0.0;
-    
-    if (ret != "0") {
-        time = strtof(ret, NULL);
-    }
+	float time = 0;
+	time = atoi(ret);
     
     printf("%f\n", time);
     return time;
@@ -40,7 +37,7 @@ float get_ping_time(char ip[20]) {
 // Compare two pings and show the fastest from both
 int compare_ips() {
     char ip_1[20] = "", ip_2[20] = "";
-    float speed_1, speed_2;
+    float speed_1 = 0.0, speed_2 = 0.0;
     
     ask("What's the first ip:\n", &ip_1);
     ask("What's the second ip:\n", &ip_2);
@@ -58,7 +55,7 @@ int compare_ips() {
     printf("The result of ip %s is %f\n", ip_1, speed_1);
     printf("The result of ip %s is %f\n", ip_2, speed_2);
     
-    if (speed_1 == 0 || speed_2 == 0) {
+    if (speed_1 == 0 || speed_2 == 0) {
         printf("A error succed\n");
     } else {
         printf("The fastest ip is...\n");

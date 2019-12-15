@@ -24,25 +24,26 @@ char * exec_ip_ping(char file[200], char ip[20]) {
     char command[200], result[1000], content[1000] = "";
 
     strcpy(command, "");
-    strcpy(command, "ping -c2 ");
+    strcpy(command, "ping ");
     strcat(command, ip);
+	strcat(command, " -n 1");
      
-    FILE *f = popen(command, "r");
+    FILE *f = _popen(command, "r");
     
     while (fgets(result, sizeof(result), f)) {
         strcat(content, result);
     }
     
-    pclose(f);
+    _pclose(f);
     
     return content;
 }
 
 void get_correct_ips(char test_file[200]) {
     // Read the file that contains the results and the correct are saved
-    char content[5000], * ip, c;
+    char content[5000] = "", * ip, c;
     char * is_ping;
-    bool matched = false;
+    bool matched = false, has_received = false;
     int i;
     FILE* fp;
     
@@ -53,19 +54,25 @@ void get_correct_ips(char test_file[200]) {
     while((c = getc(fp)) != EOF) {
         append(content, c);
         
-        ip = extract_between(content, "PING ", " (");
+        ip = extract_between(content, "Pinging ", " w");
         
-        if ((strstr(content, "packets received") != NULL) && (strstr(content, "0 packets received")) == NULL) {
+        if (has_received && (strstr(content, "Received = 0")) == NULL) {
             printf("%s\n", ip);
             
             strcpy(content, "");
             strcpy(ip, "");
+			has_received = false;
         }
         
-        if ((strstr(content, "0 packets received")) != NULL) {
+        if (has_received && (strstr(content, "Received = 0")) != NULL) {
             strcpy(content, "");
             strcpy(ip, "");
+			has_received = false;
         }
+
+		if ((strstr(content, "Received = ") != NULL)) {
+			has_received = true;
+		}
         
         i++;
     }
@@ -99,10 +106,10 @@ int checkIps() {
     // Exec pings to ips and write the results in test.txt
     printf("Testing IPs...");
     
-    strcpy(command, "rm ");
+    strcpy(command, "DEL ");
     strcat(command, test_file);
     system(command);
-    strcpy(command, "touch ");
+    strcpy(command, "type nul > ");
     strcat(command, test_file);
     system(command);
     

@@ -28,7 +28,7 @@ bool search(char string[], char match[]) {
 
 char * extract_between(const char *str, const char *p1, const char *p2)
 {
-    char *ret;
+	char *ret;
 
   const char *i1 = strstr(str, p1);
   if(i1 != NULL)
