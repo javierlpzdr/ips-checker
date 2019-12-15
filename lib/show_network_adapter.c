@@ -52,8 +52,8 @@ int show_network_adapter() {
     char adapter[200] = "", path[200] = "", * adapter_info, * match;
     int i;
     
-    ask("Nombre del adaptador:\n", adapter);
-    ask("En que archivo:\n", path);
+    ask("Adapter name:\n", adapter);
+    ask("File where to save the info:\n", path);
     
     save_adapter(path, adapter);
     
