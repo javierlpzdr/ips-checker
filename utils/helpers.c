@@ -26,8 +26,10 @@ bool search(char string[], char match[]) {
     return false;
 }
 
-char * search_between(const char *str, const char *p1, const char *p2)
+char * extract_between(const char *str, const char *p1, const char *p2)
 {
+    char *ret;
+
   const char *i1 = strstr(str, p1);
   if(i1 != NULL)
   {
@@ -37,7 +39,7 @@ char * search_between(const char *str, const char *p1, const char *p2)
     {
      /* Found both markers, extract text. */
      const size_t mlen = i2 - (i1 + pl1);
-     char *ret = malloc(mlen + 1);
+     ret = malloc(mlen + 1);
      if(ret != NULL)
      {
        memcpy(ret, i1 + pl1, mlen);
@@ -47,7 +49,7 @@ char * search_between(const char *str, const char *p1, const char *p2)
     }
   }
     
-    return "";
+    return "0";
 }
 
 int leecad(char *cad, int n) {

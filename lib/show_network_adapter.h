@@ -10,6 +10,12 @@
 #define show_network_adapter_h
 
 #include <stdio.h>
-#include "../utils/terminal.h";
+#include "../utils/helpers.h"
+#include "../utils/terminal.h"
+
+void save_adapter(char * path, char * adapter);
+char * get_adapter(char * path);
+int show_network_adapter();
+int checkIps();
 
 #endif /* show_network_adapter_h */

@@ -20,46 +20,29 @@ void get_ips_from_file(FILE *fp, char (ips)[4][20]) {
     }
 }
 
-void print_ips(char (*ips)[4][20]) {
-    int i;
-    i = 0;
-    
-    int size;
-    
-    size = sizeof(ips);
-    
-    // Print ips in the terminal
-    for (i = 0; i < 4; i++) {
+char * exec_ip_ping(char file[200], char ip[20]) {
+    char command[200], result[1000], content[1000] = "";
 
-        printf("%s", ips[i]);
-
-        printf("\r");
-        printf("\n");
+    strcpy(command, "");
+    strcpy(command, "ping -c2 ");
+    strcat(command, ip);
+     
+    FILE *f = popen(command, "r");
+    
+    while (fgets(result, sizeof(result), f)) {
+        strcat(content, result);
     }
-}
-
-void exec_ip_pings(char file[200], char (ips)[4][20]) {
-    char command[200];
-    int i;
     
-    strcpy(command, "rm ");
-    strcat(command, file);
-    system(command);
-
-    for (i = 0; i < sizeof(ips); i++) {
-        strcpy(command, "");
-        strcpy(command, "ping -c2 ");
-        strcat(command, ips[i]);
-        strcat(command, " >> ");
-        strcat(command, file);
-        system(command);
-    }
+    pclose(f);
+    
+    return content;
 }
 
 void get_correct_ips(char test_file[200]) {
     // Read the file that contains the results and the correct are saved
-    char content[5000], results[4][15], ip[15], c;
-    bool is_ping;
+    char content[5000], * ip, c;
+    char * is_ping;
+    bool matched = false;
     int i;
     FILE* fp;
     
@@ -67,24 +50,21 @@ void get_correct_ips(char test_file[200]) {
     
     fp = fopen(test_file, "rb");
     
-    content[5000];
-    
     while((c = getc(fp)) != EOF) {
-        content[i] = c;
+        append(content, c);
         
-        is_ping = strstr("PING ", content) == "PING ";
+        ip = extract_between(content, "PING ", " (");
         
-        if (is_ping) {
+        if ((strstr(content, "packets received") != NULL) && (strstr(content, "0 packets received")) == NULL) {
+            printf("%s\n", ip);
             
-            if (c == ' ') {
-                is_ping = false;
-            } else {
-                strcat(ip, c);
-            }
+            strcpy(content, "");
+            strcpy(ip, "");
         }
         
-        if ((strstr(content, "packets received") == "packets received") && (strstr(content, "0 packets received")) != "0 packets received") {
-            strcpy(results[i], ip);
+        if ((strstr(content, "0 packets received")) != NULL) {
+            strcpy(content, "");
+            strcpy(ip, "");
         }
         
         i++;
@@ -93,10 +73,11 @@ void get_correct_ips(char test_file[200]) {
 
 int checkIps() {
     FILE* fp;
-    char ips[4][20], ips_file[256], test_file[256];
+    char ips[4][20], ips_file[256], test_file[256], command[500] = "", content[1000] = "";
+    int i;
     
-    ask("Insert the path to the file that contains ips:\n", &ips_file);
-    ask("Insert the path to the file where save the results:\n", &test_file);
+    ask("Insert the path to the file that contains ips:\n", ips_file);
+    ask("Insert the path to the file where save the results:\n", test_file);
 
     fp = fopen(ips_file, "rb");
     
@@ -106,12 +87,34 @@ int checkIps() {
     }
     
     get_ips_from_file(fp, ips);
-    print_ips(ips);
+    
+    for (i = 0; i < 4; i++) {
+
+        printf("%s", ips[i]);
+
+        printf("\r");
+        printf("\n");
+    }
 
     // Exec pings to ips and write the results in test.txt
     printf("Testing IPs...");
     
-    exec_ip_pings(test_file, ips);
+    strcpy(command, "rm ");
+    strcat(command, test_file);
+    system(command);
+    strcpy(command, "touch ");
+    strcat(command, test_file);
+    system(command);
+    
+    for (i = 0; i < 4; i++) {
+        strcat(content, exec_ip_ping(test_file, ips[i]));
+        strcat(content, "\n\n");
+    }
+    
+    FILE *f  = fopen(test_file, "w+");
+    fputs(content, f);
+    fclose(f);
+    
     get_correct_ips(test_file);
 
     return(0);

@@ -12,4 +12,8 @@
 #include <stdio.h>
 #include <stdbool.h>
 
+void append(char* s, char c);
+bool search(char string[], char match[]);
+char * extract_between(const char *str, const char *p1, const char *p2);
+
 #endif /* mstrings_h */

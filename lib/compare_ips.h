@@ -13,4 +13,7 @@
 #include "../utils/helpers.h"
 #include "../utils/terminal.h"
 
+float get_ping_time(char ip[20]);
+int compare_ips();
+
 #endif /* compare_ips_h */

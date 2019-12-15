@@ -23,7 +23,7 @@ void save_adapter(char * path, char * adapter)
     system(command);
 }
 
-char * get_adpater(path) {
+char * get_adapter(char * path) {
     FILE * f = fopen (path, "rb");
     char * buffer;
     int length;
@@ -47,41 +47,27 @@ char * get_adpater(path) {
 // Get the network adapter and the result is saved in a file
 int show_network_adapter() {
     
-    char adapter[50], path[200], * adapter_info;
+    char adapter[200] = "", path[200] = "", * adapter_info, * match;
+    int i;
     
-    ask("Nombre del adaptador:\n", &adapter);
-    ask("En que archivo:\n", &path);
+    ask("Nombre del adaptador:\n", adapter);
+    ask("En que archivo:\n", path);
     
     save_adapter(path, adapter);
     
     const char parts[3][50] = {
-        "ip",
-        "mask",
-        "port"
+        "ip=",
+        "mask=",
+        "port="
     };
     
     adapter_info = get_adapter(path);
     
-    char * ret;
-    char * p1= "time=";
-    char * p2= " ms";
-    
-    const char *i1 = strstr(adapter_info, p1);
-    if(i1 != NULL)
-    {
-      const size_t pl1 = strlen(p1);
-      const char *i2 = strstr(i1 + pl1, p2);
-      if(p2 != NULL)
-      {
-       /* Found both markers, extract text. */
-       const size_t mlen = i2 - (i1 + pl1);
-       ret = malloc(mlen + 1);
-       if(ret != NULL)
-       {
-         memcpy(ret, i1 + pl1, mlen);
-         ret[mlen] = '\0';
-       }
-      }
+    for ( i=0; i <= 3; i++ ) {
+        match = extract_between(adapter_info, parts[i], " ");
+        if (match) {
+            printf("%s", match);
+        }
     }
     
     return(0);

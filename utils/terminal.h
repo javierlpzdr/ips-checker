@@ -11,4 +11,6 @@
 
 #include <stdio.h>
 
+void ask(char * question, char * output);
+
 #endif /* terminal_h */
